@@ -18,4 +18,7 @@ run :
 ```
 make deploy-infra
 ```
+An EKS cluster is deployed. 
+
+
 
