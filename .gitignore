@@ -3,7 +3,7 @@
 .terraform.lock.hcl
 
 # Local .terraform directories
-**/.terraform/*
+deployment/.terraform/
 
 # .tfstate files
 *.tfstate
