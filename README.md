@@ -61,11 +61,12 @@ kubectl get pods
 ## Step 3: Running a PySpark app
 Now we can finally run python spark apps in K8s. The first thing we need to do is to create a spark user, in order to give the spark jobs, access to the Kubernetes resources. We create a service account and a cluster role binding for this purpose:
 
+### Create the role for Spark
 Create a folder `spark` and add a file `spark-rbac.yaml`
 
 Add this in this file: 
 
-````
+```
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -88,3 +89,39 @@ subjects:
 Create this role:
 `kubectl apply -f spark/spark-rbac.yml`
 
+### Create the spark operator job definition
+
+```
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: spark-job
+  namespace: default
+spec:
+  type: Python
+  pythonVersion: "3"
+  mode: cluster
+  image: "uprush/apache-spark-pyspark:2.4.5"
+  imagePullPolicy: Always
+  mainApplicationFile: local:////opt/spark/examples/src/main/python/pi.py
+  sparkVersion: "2.4.5"
+  restartPolicy:
+    type: OnFailure
+    onFailureRetries: 2
+  driver:
+    cores: 1
+    memory: "1G"
+    labels:
+      version: 2.4.5
+    serviceAccount: spark
+  executor:
+    cores: 1
+    instances: 1
+    memory: "1G"
+    labels:
+      version: 2.4.5
+```
+
+Submit the Spark job (Pi in this example already available in the Docker image)
+
+`kubectl apply -f spark/spark-job.yaml`
