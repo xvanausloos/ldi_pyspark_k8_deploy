@@ -1,5 +1,4 @@
 deploy-infra:
 	cd deployment && \
-	terraform init
+	terraform init -upgrade && \
     terraform apply
-    
